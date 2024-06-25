@@ -2,6 +2,8 @@
 Utils.
 """
 from typing import Dict, Optional, List
+import numpy as np
+import math
 from FlightRadar24 import FlightRadar24API
 
 
@@ -35,9 +37,13 @@ def fetch_flight_data(
     )
     return [
         {
+            "id": flight.id,
+            "aircraft_code": flight.aircraft_code,
             "latitude": flight.latitude,
             "longitude": flight.longitude,
-            "id": flight.id,
+            "origin_airport_iata": flight.origin_airport_iata,
+            "destination_airport_iata": flight.destination_airport_iata,
+            "ground_speed": flight.ground_speed,
         } for flight in flights
     ]
 
@@ -97,7 +103,22 @@ def bearing_from_positions(
     Returns:
         float: Bearing in degrees.
     """
-    raise NotImplementedError("TO MODIFY")
+    # Convert to radians
+    lat1, lon1, lat2, lon2 = map(
+        math.radians,
+        [previous_latitude, previous_longitude, latitude, longitude]
+    )
+    # Compute the difference between the two longitudes
+    dlon = lon2 - lon1
+    # Compute the initial bearing
+    y = math.sin(dlon) * math.cos(lat2)
+    x = math.cos(lat1) * math.sin(lat2) - math.sin(lat1) * math.cos(lat2) * math.cos(dlon)
+    bearing_rad = math.atan2(y, x)
+    # Convert the bearing to degrees
+    bearing_deg = math.degrees(bearing_rad)
+    # Ensure the bearing is between 0 and 360 degrees
+    bearing_deg = (bearing_deg + 360) % 360
+    return bearing_deg
 
 
 def get_closest_round_angle(angle: float) -> int:
@@ -114,7 +135,22 @@ def get_closest_round_angle(angle: float) -> int:
             165, 180, 195, 210, 225, 240, 255, 270,
             285, 300, 315, 330, 345.
     """
-    raise NotImplementedError("TO MODIFY")
+    round_angles = [
+        0, 15, 30, 45, 60, 75, 90,
+        105, 120, 135, 150, 165, 180,
+        195, 210, 225, 240, 255, 270,
+        285, 300, 315, 330, 345, 360,
+    ]
+    differences = np.array([
+        angle - round_angle for round_angle in round_angles
+    ])
+    abs_differences = np.abs(differences)
+    closest_angle_idx = abs_differences.argmin()
+    closest_angle = round_angles[closest_angle_idx]
+    if closest_angle == 360:
+        return 0
+    else:
+        return closest_angle
 
 
 def get_custom_icon(round_angle: int) -> Dict:

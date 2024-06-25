@@ -43,7 +43,31 @@ fr_api = FlightRadar24API()
 #| code-overflow: scroll
 
 airlines = fr_api.get_airlines()
-print(f"Il y a {len(airlines)} compagnies aériennes différentes dont on peut récupérer les vols.")
+print(f"Il y a {len(airlines)} compagnies aériennes différentes dont on peut récupérer les vols {airlines}.")
+zones = fr_api.get_zones()
+print(f"Il y a {len(zones)} zones différentes dans la liste {zones['europe']['subzones']['france']}.")
+
+
+airline_icao = "AFR"
+aircraft_type = "B77W"
+
+# You may also set a custom region, such as: bounds = "73,-12,-156,38"
+zone = fr_api.get_zones()["europe"]
+bounds = fr_api.get_bounds(zone)
+
+air_france_flights = fr_api.get_flights(
+    aircraft_type = aircraft_type,
+    airline = airline_icao,
+    bounds = bounds
+)
+
+print(f"Il y a {len(air_france_flights)} vols irfrance avec un type avion B77W. {air_france_flights}")
+
+flight_details = fr_api.get_flight_details(air_france_flights[0])
+air_france_flights[0].set_flight_details(flight_details)
+
+print("Flying to", air_france_flights[0].icao_24bit)
+
 ```
 
 3. Compter le nombre de zones géographiques utilisables et en afficher une selection.

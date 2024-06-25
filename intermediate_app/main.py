@@ -4,6 +4,7 @@ First version of a visualisation app for FlightRadar24 data.
 import dash
 from dash import dcc
 from dash import html
+from dash import Dash, callback, Output, Input
 import dash_leaflet as dl
 from FlightRadar24 import FlightRadar24API
 from utils import fetch_flight_data
@@ -35,6 +36,10 @@ app.layout = html.Div([
     )
 ])
 
+@app.callback(
+    Output('map', 'children'),
+    Input('interval-component', 'n_intervals'),
+)
 
 # TO MODIFY: Add callback decorator
 def update_graph_live(n):
@@ -49,7 +54,8 @@ def update_graph_live(n):
     children = default_map_children + [
         dl.Marker(
             id=flight['id'],
-            position=[0, 0]
+            position=[flight['latitude'], flight['longitude']],
+            children=[dl.Popup(content=f"Id: {flight['id']}")]
         ) for flight in data
     ]
 
