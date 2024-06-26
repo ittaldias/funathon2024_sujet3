@@ -32,6 +32,4 @@ jobs:
           push: true
           tags: devdata2023/docker_file:latest  # Change 'tagname' to 'latest' or another specific tag as needed
 
-      # Optionally, if you need to run the image as part of the CI process (for tests, etc.)
-      - name: Run image locally (optional)
-        run: docker run --rm devdata2023/docker_file:latest
+  
