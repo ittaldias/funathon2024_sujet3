@@ -30,7 +30,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: yourusername/yourrepo:latest
+          tags: devdata2023/docker_file:tagname
 
       - name: Run image locally (optional)
-        run: docker run --rm yourusername/yourrepo:latest
+        run: docker push devdata2023/docker_file:tagname
