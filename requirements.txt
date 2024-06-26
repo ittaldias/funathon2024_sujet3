@@ -5,3 +5,4 @@ dash-leaflet
 jupyter
 jupyter-cache
 numpy
+matplotlib
